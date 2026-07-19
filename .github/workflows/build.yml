@@ -1,0 +1,25 @@
+# .github/workflows/build.yml
+name: Build dylib
+on: [push, workflow_dispatch]
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile
+        run: |
+          clang -arch arm64 \
+            -isysroot $(xcrun --sdk iphoneos --show-sdk-path) \
+            -mios-version-min=12.0 \
+            -dynamiclib \
+            -o libDeltaruneVerification.dylib \
+            DeltaruneVerification.m \
+            -framework Foundation \
+            -framework UIKit \
+            -framework WebKit \
+            -fobjc-arc
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: dylib
+          path: libDeltaruneVerification.dylib
